@@ -29,25 +29,34 @@ filesystem_folder = {tmp_path / 'radicale-data'}
 level = error
 ''')
     log = open(tmp_path / 'radicale.log', 'wb')
-    process = subprocess.Popen([sys.executable, '-m', 'radicale', '--config', str(cfg)], stdout=log, stderr=log)
+    bootstrap = "import faulthandler,runpy; faulthandler.dump_traceback_later(20, repeat=True); runpy.run_module('radicale', run_name='__main__')"
+    process = subprocess.Popen([sys.executable, '-c', bootstrap, '--config', str(cfg)], stdout=log, stderr=log)
     url = f'http://127.0.0.1:{port}/'
+    readiness = requests.Session()
+    readiness.trust_env = False
     try:
-        for _ in range(100):
+        deadline = time.monotonic() + 30
+        while time.monotonic() < deadline:
             try:
-                requests.get(url, timeout=.1)
+                readiness.get(url, timeout=.2)
                 break
             except requests.RequestException:
                 if process.poll() is not None:
-                    pytest.fail('Disposable Radicale failed to start')
+                    pytest.fail('Disposable Radicale failed to start: ' + (tmp_path / 'radicale.log').read_text())
                 time.sleep(.05)
         else:
-            pytest.fail('Disposable Radicale readiness timeout')
+            pytest.fail('Disposable Radicale readiness timeout: ' + (tmp_path / 'radicale.log').read_text())
         client = DAVClient({'url': url, 'username': 'test', 'password': 'test', 'allow_http': True})
         client.make_calendar(url + 'test/calendar/', 'Integration')
         yield client
     finally:
+        readiness.close()
         process.terminate()
-        process.wait(timeout=10)
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=5)
         log.close()
 
 
