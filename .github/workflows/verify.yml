@@ -1,0 +1,42 @@
+name: Verify
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-26
+            python: '3.14'
+          - os: ubuntu-latest
+            python: '3.11'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m venv .venv
+      - run: .venv/bin/python -m pip install --require-hashes -r requirements-test.lock
+      - run: sh tests/run.sh
+      - run: sh skills/calendar/setup && CALENDAR_DATA="$RUNNER_TEMP/calendar-data" skills/calendar/doctor
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: sh tests/package-smoke.sh
+  debian:
+    runs-on: ubuntu-latest
+    container: debian:stable-slim
+    steps:
+      - run: apt-get update -qq && apt-get install -y python3 python3-venv ca-certificates git
+      - uses: actions/checkout@v6
+      - run: python3 -m venv .venv
+      - run: .venv/bin/python -m pip install --require-hashes -r requirements-test.lock
+      - run: sh tests/run.sh
+      - run: sh skills/calendar/setup && CALENDAR_DATA=/tmp/calendar-doctor skills/calendar/doctor

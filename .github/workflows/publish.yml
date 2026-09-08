@@ -1,0 +1,28 @@
+name: Publish Package
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - run: python -m venv .venv
+      - run: .venv/bin/python -m pip install --require-hashes -r requirements-test.lock
+      - run: npm run verify
+      - name: Verify tag matches package
+        run: node -e 'if (process.env.GITHUB_REF_NAME !== "v" + require("./package.json").version) process.exit(1)'
+      - run: npm install -g npm@latest
+      - run: npm pack --dry-run --json
+      - run: npm publish --provenance --access public

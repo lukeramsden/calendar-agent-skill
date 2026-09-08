@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+PYTHON=${CALENDAR_PYTHON:-python3}
+if ! "$PYTHON" -c 'import sys; assert sys.version_info >= (3,11)' >/dev/null 2>&1; then
+    printf '%s\n' 'Python 3.11+ missing. See skills/calendar/setup and README bootstrap instructions.' >&2
+    exit 1
+fi
+HERE=$("$PYTHON" -c 'import os,sys; print(os.path.dirname(os.path.realpath(sys.argv[1])))' "$0")
+if [ "${1:-}" = setup ]; then
+    exec "$HERE/setup"
+fi
+HASH=$("$PYTHON" -c 'import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],"rb").read()).hexdigest()[:16])' "$HERE/requirements.lock")
+RUNTIME=${CALENDAR_RUNTIME:-${XDG_DATA_HOME:-$HOME/.local/share}/calendar-agent-skill/runtime}
+ENV="$RUNTIME/$HASH"
+if [ ! -f "$ENV/.ready" ]; then
+    printf '%s\n' 'Runtime not installed for this release. Run calendar-cli setup (or ./setup in the skill directory).' >&2
+    exit 1
+fi
+export PYTHONPATH="$HERE"
+export PYTHONNOUSERSITE=1
+exec "$ENV/bin/python" -m calendar_cli.cli "$@"

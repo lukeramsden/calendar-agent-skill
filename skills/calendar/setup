@@ -1,0 +1,27 @@
+#!/bin/sh
+# Explicit setup only: never change the operating system's Python environment.
+set -eu
+HERE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+PYTHON=${CALENDAR_PYTHON:-python3}
+if ! "$PYTHON" -c 'import sys; assert sys.version_info >= (3,11)' >/dev/null 2>&1; then
+    printf '%s\n' 'Python 3.11+ is required.' 'macOS: install the signed universal Python package from https://www.python.org/downloads/macos/ (admin access may be needed).' 'Debian: sudo apt-get update && sudo apt-get install -y python3 python3-venv ca-certificates' 'Then rerun this setup. Set CALENDAR_PYTHON if Python is not on PATH.' >&2
+    exit 1
+fi
+RUNTIME=${CALENDAR_RUNTIME:-${XDG_DATA_HOME:-$HOME/.local/share}/calendar-agent-skill/runtime}
+umask 077
+mkdir -p "$RUNTIME"
+if ! mkdir "$RUNTIME/.setup-lock" 2>/dev/null; then
+    printf '%s\n' 'Setup is already running. If it was interrupted, remove runtime/.setup-lock and retry.' >&2
+    exit 1
+fi
+trap 'rmdir "$RUNTIME/.setup-lock"' EXIT HUP INT TERM
+# The lock hash selects immutable dependency environments, avoiding upgrades under running CLIs.
+HASH=$("$PYTHON" -c 'import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],"rb").read()).hexdigest()[:16])' "$HERE/requirements.lock")
+ENV="$RUNTIME/$HASH"
+if [ ! -f "$ENV/.ready" ]; then
+    "$PYTHON" -m venv "$ENV"
+    "$ENV/bin/python" -m pip install --require-hashes -r "$HERE/requirements.lock" >&2
+    "$ENV/bin/python" -c 'import sqlite3,icalendar,recurring_ical_events,requests,defusedxml; sqlite3.connect(":memory:").execute("CREATE VIRTUAL TABLE test USING fts5(text)")'
+    touch "$ENV/.ready"
+fi
+printf '{"ready":true,"runtime":"%s"}\n' "$ENV"

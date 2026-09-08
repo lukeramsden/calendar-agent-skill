@@ -1,0 +1,15 @@
+{
+  "name": "calendar-agent-skill",
+  "version": "0.1.0",
+  "description": "Agent skill for ICS feeds, local calendar editing and safe CalDAV operations, with SQLite FTS search and resumable backfill.",
+  "license": "MIT",
+  "author": "lukeramsden",
+  "repository": {"type": "git", "url": "git+https://github.com/lukeramsden/calendar-agent-skill.git"},
+  "homepage": "https://github.com/lukeramsden/calendar-agent-skill#readme",
+  "bugs": {"url": "https://github.com/lukeramsden/calendar-agent-skill/issues"},
+  "keywords": ["pi-package", "pi-skill", "agent-skill", "calendar", "ics", "icalendar", "caldav"],
+  "pi": {"skills": ["./skills"]},
+  "bin": {"calendar-cli": "skills/calendar/calendar-cli"},
+  "files": ["skills/calendar/SKILL.md", "skills/calendar/calendar-cli", "skills/calendar/doctor", "skills/calendar/setup", "skills/calendar/requirements.in", "skills/calendar/requirements.lock", "skills/calendar/calendar_cli/*.py", "skills/calendar/references/*.md", "README.md", "LICENSE", "NOTICE", "SECURITY.md", "CONTRIBUTING.md", "docs/*.md"],
+  "scripts": {"verify": "sh tests/run.sh", "test": "sh tests/run.sh"}
+}

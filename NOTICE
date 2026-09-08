@@ -1,0 +1,8 @@
+Calendar Agent Skill is an independent project. It is not affiliated with Apple,
+Google, Proton, the IETF, or any calendar provider. Product names are used only to
+describe interoperability.
+
+The Python runtime installs separately licensed dependencies, including icalendar,
+recurring-ical-events, python-dateutil, requests, defusedxml and keyring. Their
+licenses and notices remain in their installed distributions. Dependency artifacts
+are downloaded from PyPI, not bundled as project-owned code.
