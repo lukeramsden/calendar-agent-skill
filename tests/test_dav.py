@@ -29,7 +29,12 @@ filesystem_folder = {tmp_path / 'radicale-data'}
 level = error
 ''')
     log = open(tmp_path / 'radicale.log', 'wb')
-    bootstrap = "import faulthandler,runpy; faulthandler.dump_traceback_later(20, repeat=True); runpy.run_module('radicale', run_name='__main__')"
+    # The disposable loopback server needs no reverse DNS. Fresh macOS CI can
+    # block in HTTPServer.server_bind -> getfqdn for minutes; keep this override
+    # inside the synthetic server process, never in the calendar client.
+    bootstrap = ("import faulthandler,runpy,socket; socket.getfqdn=lambda name='': 'localhost'; "
+                 "faulthandler.dump_traceback_later(20, repeat=True); "
+                 "runpy.run_module('radicale', run_name='__main__')")
     process = subprocess.Popen([sys.executable, '-c', bootstrap, '--config', str(cfg)], stdout=log, stderr=log)
     url = f'http://127.0.0.1:{port}/'
     readiness = requests.Session()

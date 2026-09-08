@@ -5,7 +5,7 @@ from calendar_cli.sources import Transport, CalendarError, xml
 from calendar_cli.documents import parse_bound
 
 @pytest.fixture
-def feed_server(basic):
+def feed_server(basic, monkeypatch):
     state = {'raw': basic, 'etag': '"one"', 'requests': [], 'redirect': False}
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *args):
@@ -24,7 +24,10 @@ def feed_server(basic):
                 self.send_header('ETag', state['etag'])
                 self.end_headers()
                 self.wfile.write(state['raw'])
-    server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+    # HTTPServer's display hostname should not require external reverse DNS.
+    with monkeypatch.context() as context:
+        context.setattr('socket.getfqdn', lambda name='': 'localhost')
+        server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()
     yield f'http://127.0.0.1:{server.server_port}/secret-token.ics', state
