@@ -11,10 +11,15 @@ integration and publication checks are still pending. See
 
 ## Install
 
-Once released, the distribution targets are:
+Install the development skill from GitHub now:
 
 ```bash
 npx skills add lukeramsden/calendar-agent-skill@calendar
+```
+
+After the npm release, these paths will also be available:
+
+```bash
 pi install npm:calendar-agent-skill
 npm install -g calendar-agent-skill
 ```
@@ -94,6 +99,9 @@ your temporary config if no longer needed.
   create/update/delete and explicit capability-gated scheduling.
 - Read-only-by-default workflows, private URL redaction, safe redirects, bounded
   parsing/expansion and explicit remote/scheduling consent flags.
+
+The 35-test suite passes on macOS 26, Debian 13, and Python 3.11 Linux CI,
+including a disposable real CalDAV server and fresh packed npm installation.
 
 The full agent command guide is [SKILL.md](skills/calendar/SKILL.md).
 See [remote writes](skills/calendar/references/remote.md) and
