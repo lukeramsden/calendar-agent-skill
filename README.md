@@ -5,9 +5,9 @@ CalDAV discovery and safe remote writes, with SQLite FTS5 search and resumable
 historical backfill. Same skill layout and JSON-first CLI pattern as the Gmail
 and Proton Mail agent skills.
 
-**Release status: development; not yet published to npm.** The private user-feed
-integration and publication checks are still pending. See
-[verification evidence](docs/verification.md).
+**Release status: development; not yet published to npm.** Private live-feed
+integration has passed; npm publishing authentication and released-artifact
+checks remain pending. See [verification evidence](docs/verification.md).
 
 ## Install
 

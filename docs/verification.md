@@ -1,6 +1,6 @@
 # Verification evidence
 
-Development checkpoint, 2026-09-08. No release is claimed complete.
+Development checkpoint, 2026-09-09. No release is claimed complete.
 
 ## Observed runs
 
@@ -28,6 +28,24 @@ Development checkpoint, 2026-09-08. No release is claimed complete.
   components, 1,000 FTS matches in **0.0056 seconds** on the Mac. Not a benchmark
   of the user's unknown feed or every archive size.
 
+## Private live-feed integration
+
+On 2026-09-09, the user-supplied feed passed private integration checks: the
+configured five-year historical/one-year future window had no processing gaps;
+FTS found a known source component; a separate fresh recurrence expansion matched
+the cached date-range query; offline queries and cached-only sync succeeded; and
+a local property edit left the source snapshot unchanged. No remote mutations or
+invitations were sent. URLs, source bytes, event text and detailed source counts
+remain outside this repository in protected local storage.
+
+The live source changed between fetches, including export timestamps and initially
+additional components. Tests therefore validate each observed revision rather
+than incorrectly assuming a live feed is immutable. Historical snapshots were
+retained and coverage was recomputed for the new revision. This does not establish
+that the provider exposes every historical event. Export-timestamp changes can
+currently invalidate occurrence coverage conservatively, making refresh slower
+than an unchanged-feed refresh; cached offline queries remain fast.
+
 ## Requirement matrix
 
 | Requirement | Evidence / remaining work |
@@ -49,15 +67,15 @@ Development checkpoint, 2026-09-08. No release is claimed complete.
 | Scheduling | invitation/reply payload fixtures, unsupported Radicale outbox rejection, simulated per-recipient success/failure response parsing; no real invitations sent |
 | Attachments | binary extraction tested; external fetch requires explicit flag; bounded HTTPS transport shared with feeds |
 | Limits/safety | response/document/worker/output bounds, XML entity rejection, no cross-origin credential forwarding; limitations documented |
-| User feed | **Pending: user has not supplied it**; no private data included in fixtures |
+| User feed | **Passed privately, 2026-09-09**: live fetch, backfill coverage, independent recurrence comparison, FTS, offline operation and non-destructive local editing; no private data committed |
 | GitHub/npm publication | Public repository at https://github.com/lukeramsden/calendar-agent-skill; CI passed; **npm whoami returns E401**; npm publication and release/tag remain pending |
 | Skills/local installation | GitHub Skills discovery/install passed; installed calendar skill at ~/.pi/agent/skills/calendar and its doctor passed; packed npm CLI installation passed |
 
 ## Release gates still open
 
-1. Receive and privately test the user-supplied ICS feed.
-2. Resolve initial npm publishing authentication or trusted-publisher configuration.
-3. Publish a release/tag and verify the actual npm-registry artifact. GitHub source
+1. Resolve initial npm publishing authentication or trusted-publisher configuration
+   (`npm whoami` still returned E401 on 2026-09-09).
+2. Publish a release/tag and verify the actual npm-registry artifact. GitHub source
    distribution and local skill installation are already verified; refresh the local
    installation after release.
 
