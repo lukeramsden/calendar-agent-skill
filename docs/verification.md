@@ -1,7 +1,36 @@
 # Verification evidence
 
-Pre-publication checkpoint, 2026-09-09. This document is updated on GitHub after
-release verification; the first package artifact retains this pre-publication record.
+Release verification, 2026-09-09. Version **0.1.0** is published and its registry
+artifact has passed installation/workflow checks. The immutable initial package
+contains the earlier pre-publication checkpoint; this GitHub document records the
+post-publication results.
+
+## Published release
+
+- npm: https://www.npmjs.com/package/calendar-agent-skill/v/0.1.0
+- GitHub: https://github.com/lukeramsden/calendar-agent-skill/releases/tag/v0.1.0
+- Tag `v0.1.0` points to `633fa3c755a57d2918283eee64d709980f3734df`.
+- Registry integrity:
+  `sha512-kaXgWrQY7D+tDNXomKvrUwBKARRy/NdY1b+mvCe9yyW11Cabn9S2DOmVCH8GpPYKrm8Pe4MKYwL4TRGMxMGa0g==`.
+- Independently downloaded the npm tarball, recomputed its SHA-512 integrity,
+  and compared all **21 shipped files byte-for-byte** with the `v0.1.0` Git tag:
+  every file matched.
+- Release-preparation [CI run 34329330538](https://github.com/lukeramsden/calendar-agent-skill/actions/runs/34329330538)
+  passed. The tag's [publish workflow 34329627230](https://github.com/lukeramsden/calendar-agent-skill/actions/runs/34329627230)
+  passed tests and correctly detected the already-published version.
+- The maintainer completed the initial npm publication with login and 2FA. This
+  release does not claim OIDC provenance. Future automated new-version publication
+  requires npm trusted-publisher configuration as described in CONTRIBUTING.md.
+- `CALENDAR_PACKAGE_SPEC=calendar-agent-skill@0.1.0 sh tests/package-smoke.sh`
+  downloaded the real registry artifact and verified isolated installation, locked
+  setup, doctor, source registration, sync, FTS and four-occurrence agenda on
+  macOS 26. The same registry-artifact test passed in a fresh Debian 13 container
+  provisioned with Python/venv, CA certificates, Node and npm.
+- `pi install npm:calendar-agent-skill@0.1.0` succeeded in an isolated pi config;
+  `pi list` confirmed the exact installed package version.
+- GitHub Skills installation was refreshed globally for pi after release;
+  `~/.pi/agent/skills/calendar/doctor` passed. Normal user calendar data was not
+  changed by installation tests.
 
 ## Observed runs
 
@@ -69,16 +98,16 @@ than an unchanged-feed refresh; cached offline queries remain fast.
 | Attachments | binary extraction tested; external fetch requires explicit flag; bounded HTTPS transport shared with feeds |
 | Limits/safety | response/document/worker/output bounds, XML entity rejection, no cross-origin credential forwarding; limitations documented |
 | User feed | **Passed privately, 2026-09-09**: live fetch, backfill coverage, independent recurrence comparison, FTS, offline operation and non-destructive local editing; no private data committed |
-| GitHub/npm publication | Public repository at https://github.com/lukeramsden/calendar-agent-skill; CI passed; npm login verified as lukeramsden on 2026-09-09; initial package publication and post-release checks are next |
-| Skills/local installation | GitHub Skills discovery/install passed; installed calendar skill at ~/.pi/agent/skills/calendar and its doctor passed; packed npm CLI installation passed |
+| GitHub/npm publication | **Published and verified**: npm 0.1.0 and GitHub v0.1.0 release; exact URLs, commit and registry integrity above |
+| Skills/local installation | Refreshed GitHub Skills install and doctor passed; isolated pi npm installation passed; actual npm registry-artifact workflows passed on macOS and Debian |
 
-## Publication checkpoint
+## Release gate outcome
 
-npm authentication was initially unavailable, then verified as `lukeramsden` after
-login on 2026-09-09. The remaining step at this pre-publication checkpoint is to
-publish the initial package/release tag and verify the actual npm-registry artifact. GitHub source
-   distribution and local skill installation are already verified; refresh the local
-   installation after release.
+Private live-feed validation, supported-platform verification, publication and
+published-artifact installation checks have passed. No source URL, credential,
+calendar text or private integration artifact was included in the release.
+Future automated publishing configuration is a maintainer setup step, not a claim
+that this manually authenticated first publish had an OIDC attestation.
 
 The feature/standards boundary is explicit in
 [coverage.md](../skills/calendar/references/coverage.md). No claim of universal
