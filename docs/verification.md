@@ -1,6 +1,7 @@
 # Verification evidence
 
-Development checkpoint, 2026-09-09. No release is claimed complete.
+Pre-publication checkpoint, 2026-09-09. This document is updated on GitHub after
+release verification; the first package artifact retains this pre-publication record.
 
 ## Observed runs
 
@@ -68,14 +69,14 @@ than an unchanged-feed refresh; cached offline queries remain fast.
 | Attachments | binary extraction tested; external fetch requires explicit flag; bounded HTTPS transport shared with feeds |
 | Limits/safety | response/document/worker/output bounds, XML entity rejection, no cross-origin credential forwarding; limitations documented |
 | User feed | **Passed privately, 2026-09-09**: live fetch, backfill coverage, independent recurrence comparison, FTS, offline operation and non-destructive local editing; no private data committed |
-| GitHub/npm publication | Public repository at https://github.com/lukeramsden/calendar-agent-skill; CI passed; **npm whoami returns E401**; npm publication and release/tag remain pending |
+| GitHub/npm publication | Public repository at https://github.com/lukeramsden/calendar-agent-skill; CI passed; npm login verified as lukeramsden on 2026-09-09; initial package publication and post-release checks are next |
 | Skills/local installation | GitHub Skills discovery/install passed; installed calendar skill at ~/.pi/agent/skills/calendar and its doctor passed; packed npm CLI installation passed |
 
-## Release gates still open
+## Publication checkpoint
 
-1. Resolve initial npm publishing authentication or trusted-publisher configuration
-   (`npm whoami` still returned E401 on 2026-09-09).
-2. Publish a release/tag and verify the actual npm-registry artifact. GitHub source
+npm authentication was initially unavailable, then verified as `lukeramsden` after
+login on 2026-09-09. The remaining step at this pre-publication checkpoint is to
+publish the initial package/release tag and verify the actual npm-registry artifact. GitHub source
    distribution and local skill installation are already verified; refresh the local
    installation after release.
 

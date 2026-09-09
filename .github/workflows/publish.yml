@@ -25,4 +25,16 @@ jobs:
         run: node -e 'if (process.env.GITHUB_REF_NAME !== "v" + require("./package.json").version) process.exit(1)'
       - run: npm install -g npm@latest
       - run: npm pack --dry-run --json
-      - run: npm publish --provenance --access public
+      - name: Check whether this version is already published
+        id: registry
+        shell: bash
+        run: |
+          SPEC=$(node -p 'const p=require("./package.json"); p.name+"@"+p.version')
+          if npm view "$SPEC" version --json > "$RUNNER_TEMP/registry.json"; then
+            echo 'published=true' >> "$GITHUB_OUTPUT"
+          else
+            node -e 'const r=require(process.argv[1]); if(r.error?.code!=="E404") process.exit(1)' "$RUNNER_TEMP/registry.json"
+            echo 'published=false' >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.registry.outputs.published != 'true'
+        run: npm publish --provenance --access public

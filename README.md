@@ -5,19 +5,19 @@ CalDAV discovery and safe remote writes, with SQLite FTS5 search and resumable
 historical backfill. Same skill layout and JSON-first CLI pattern as the Gmail
 and Proton Mail agent skills.
 
-**Release status: development; not yet published to npm.** Private live-feed
-integration has passed; npm publishing authentication and released-artifact
-checks remain pending. See [verification evidence](docs/verification.md).
+**Initial version: 0.1.0.** Private live-feed integration and the cross-platform
+test suite have passed. See the [current release evidence](https://github.com/lukeramsden/calendar-agent-skill/blob/main/docs/verification.md)
+for registry publication and post-release checks.
 
 ## Install
 
-Install the development skill from GitHub now:
+Install the skill from GitHub:
 
 ```bash
 npx skills add lukeramsden/calendar-agent-skill@calendar
 ```
 
-After the npm release, these paths will also be available:
+Or install through npm / pi:
 
 ```bash
 pi install npm:calendar-agent-skill
