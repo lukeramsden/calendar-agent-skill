@@ -18,9 +18,16 @@ post-publication results.
 - Release-preparation [CI run 34329330538](https://github.com/lukeramsden/calendar-agent-skill/actions/runs/34329330538)
   passed. The tag's [publish workflow 34329627230](https://github.com/lukeramsden/calendar-agent-skill/actions/runs/34329627230)
   passed tests and correctly detected the already-published version.
-- The maintainer completed the initial npm publication with login and 2FA. This
-  release does not claim OIDC provenance. Future automated new-version publication
-  requires npm trusted-publisher configuration as described in CONTRIBUTING.md.
+- The maintainer completed the initial npm publication with login and 2FA. The
+  0.1.0 release does not claim OIDC provenance.
+- **0.1.1 (2026-09-14, documentation only)** was published by the tag workflow with
+  npm trusted publishing and a provenance attestation, after the maintainer
+  configured the trusted publisher (`lukeramsden/calendar-agent-skill`,
+  `publish.yml`). The first attempt failed with a registry 404 before that
+  configuration existed; the [rerun](https://github.com/lukeramsden/calendar-agent-skill/actions/runs/34842840675)
+  succeeded. Registry integrity:
+  `sha512-0gEIBS8r24bgjw/gJeyylZ/IfijkPycdsAEcFxn1l3K7etWYrcgwR5n9eTfjstVW271cBSCQlfb40YwOVEySFg==`.
+  Automated publishing of future tagged versions needs no further setup.
 - `CALENDAR_PACKAGE_SPEC=calendar-agent-skill@0.1.0 sh tests/package-smoke.sh`
   downloaded the real registry artifact and verified isolated installation, locked
   setup, doctor, source registration, sync, FTS and four-occurrence agenda on
@@ -106,8 +113,8 @@ than an unchanged-feed refresh; cached offline queries remain fast.
 Private live-feed validation, supported-platform verification, publication and
 published-artifact installation checks have passed. No source URL, credential,
 calendar text or private integration artifact was included in the release.
-Future automated publishing configuration is a maintainer setup step, not a claim
-that this manually authenticated first publish had an OIDC attestation.
+The 0.1.0 publish was manually authenticated and has no OIDC attestation; from
+0.1.1 onward the tag workflow publishes with trusted publishing and provenance.
 
 The feature/standards boundary is explicit in
 [coverage.md](../skills/calendar/references/coverage.md). No claim of universal

@@ -36,12 +36,12 @@ regressions before changing recurrence identity, deletion, coverage or ETag logi
 2. Run `npm pack --dry-run --json`; inspect contents for credentials, caches,
    bytecode and omitted runtime files. Install the packed artifact in a temporary
    npm prefix and run setup, doctor and an offline/local-source workflow.
-3. Ensure the initial npm package exists and configure npm trusted publishing for
-   `lukeramsden/calendar-agent-skill`, workflow `publish.yml`. The first publish may
-   require an interactive npm login/OTP. Never put a token in source control.
+3. npm trusted publishing is configured for `lukeramsden/calendar-agent-skill`,
+   workflow `publish.yml` (since 0.1.1); pushing a `v*` tag publishes with OIDC and
+   provenance. Never put a token in source control.
 4. Update release status and evidence, set the package version, commit, and tag
    `v<version>`. The publish workflow verifies tests before npm publishing with
-   OIDC/provenance. Push the tag only after publishing authorization is ready.
+   OIDC/provenance.
 5. Install from the published npm version and GitHub Skills path; run smoke tests.
    Record the URLs, version, CI runs and test results. Install the skill locally.
 
