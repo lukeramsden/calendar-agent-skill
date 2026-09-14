@@ -7,7 +7,9 @@ description: Work with ICS/iCalendar feeds, local calendar files and CalDAV cale
 
 Run `./calendar-cli` in this skill directory, or use its absolute path. The
 runtime is entirely contained in this skill plus an isolated dependency
-installation. Data commands emit JSON on stdout; diagnostics use stderr.
+installation. Data commands emit JSON on stdout; diagnostics use stderr. Every
+command returns a **wrapper object, not a bare array** — see
+[Output shapes](#output-shapes) for which key holds the rows.
 
 ## Start here
 
@@ -68,6 +70,41 @@ Date bounds are ISO 8601, half-open `[since, until)`. Bare dates mean UTC midnig
 supply an offset for local day boundaries. A source's configured timezone governs
 floating and all-day occurrence interpretation. Do not silently equate floating
 times with UTC. All-day end dates are exclusive.
+
+## Output shapes
+
+All JSON commands return one top-level object. `jq '.[]'` on it is *not* an
+empty result — it is the wrong selector. Pick the row key from this table, and
+before reporting "nothing found", check `warnings`, `complete` and `coverage`:
+an empty row list with `complete:false` or a non-empty `warnings` means the
+cache may be stale or unexpanded, not that no events exist.
+
+| Command | Top-level keys | Rows | `jq` |
+|---|---|---|---|
+| `agenda` | `occurrences, coverage, complete, warnings, sources` | `occurrences[]` → `calendar_id, kind, uid, rid, start, end, all_day, summary, status, transparent, ...` | `jq '.occurrences[]'` |
+| `conflicts` | `conflicts, coverage, complete, warnings, sources` | `conflicts[]` → `{left, right}` (each an occurrence) | `jq '.conflicts[]'` |
+| `freebusy` | `busy, free, complete, coverage, note, warnings, sources` | `busy[]` / `free[]` → `{start, end}` | `jq '.busy[]'` |
+| `search`, `list` | `results, warnings, sources` | `results[]` → `id, calendar_id, revision, kind, uid, rid, summary, location` (+ `rank, snippet` for `search`) | `jq '.results[]'` |
+| `read` | one component: `id, calendar_id, revision, kind, uid, rid, summary, description, location, people, raw, component` | — | `jq '.component'` |
+| `coverage` | `calendar_id, revision, timezone, engine, intervals, [gaps], incomplete_attempts, upstream_history_complete` | `intervals[]`, `gaps[]` → `{start, end}` | `jq '.gaps'` |
+| `add` | `id, name, kind, timezone` | the new `source_id` is `id` | — |
+| `configure` | `source_id, configured, refresh_required` | — | — |
+| `sources` | `sources` | `sources[]` → `id, name, kind, timezone, past_years, future_years, fetched_at, last_error, ...` | `jq '.sources[]'` |
+| `calendars` | `calendars` | `calendars[]` → `id, source_id, name, revision, active` | `jq '.calendars[]'` |
+| `status` | `sources, calendars, recent_runs, database_bytes, note` | as above; `recent_runs[]` → `id, source_id, started_at, finished_at, status, error` | `jq '.recent_runs[]'` |
+| `sync` | `results` | `results[]` → `run_id, calendars, start, end` | `jq '.results[]'` |
+| `drafts` | `drafts` | `drafts[]` → `id, calendar_id, base_revision, created_at` | `jq '.drafts[]'` |
+| `import`, `create`, `edit` | `draft_id, remote_modified` | — | — |
+| `inspect` | `valid, calendars` | `calendars[]` → described calendar with components | `jq '.calendars[]'` |
+| `validate` | `valid, calendars` (a count), `note` | — | — |
+| `diff` | `diff` | — | — |
+| `export*`, `draft-export`, `attachment`, `invitation` | `path, bytes` | file written | — |
+| `discover` | `calendars, homes` | `calendars[]` → remote calendar hrefs | — |
+| `resources`, `remote-query` | `resources` | `resources[]` → `resource, etag, [raw]` | `jq '.resources[]'` |
+| `doctor` | `ok, python, sqlite, fts5, database, free_bytes, sources, network_checked, note` | — | — |
+
+Failures print `{"error": "..."}` to **stderr** with a non-zero exit code;
+stdout stays empty.
 
 ## Local documents and drafts
 

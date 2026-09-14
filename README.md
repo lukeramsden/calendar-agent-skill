@@ -5,7 +5,7 @@ CalDAV discovery and safe remote writes, with SQLite FTS5 search and resumable
 historical backfill. Same skill layout and JSON-first CLI pattern as the Gmail
 and Proton Mail agent skills.
 
-**Initial version: 0.1.0.** Private live-feed integration and the cross-platform
+**Current version: 0.1.1** (0.1.0 plus documentation). Private live-feed integration and the cross-platform
 test suite have passed. See the [current release evidence](https://github.com/lukeramsden/calendar-agent-skill/blob/main/docs/verification.md)
 for registry publication and post-release checks.
 
